@@ -22,7 +22,8 @@ protected:
 	virtual void SetupInputComponent() override;
 	// End PlayerController interface
 
-	
+	void Forward(float Value);
+	void Right(float Value);
 };
 
 

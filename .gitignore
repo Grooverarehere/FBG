@@ -75,3 +75,4 @@ DerivedDataCache/*
 
 # Ignore materials and assets 
 Content/Assets/*
+Content/BomberGuys/*

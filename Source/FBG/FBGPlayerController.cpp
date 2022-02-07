@@ -23,6 +23,21 @@ void AFBGPlayerController::SetupInputComponent()
 {
 	// set up gameplay key bindings
 	Super::SetupInputComponent();
+	InputComponent->BindAxis("MoveForward", this, &AFBGPlayerController::Forward);
+	InputComponent->BindAxis("MoveRight", this, &AFBGPlayerController::Right);
+}
 
+void AFBGPlayerController::Forward(float Value)
+{
+	const FVector direction(1.f, 0.f, 0.f);
+	if (GetPawn())
+		GetPawn()->AddMovementInput(direction, Value);
+}
+
+void AFBGPlayerController::Right(float Value)
+{
+	const FVector direction(0.f, 1.f, 0.f);
+	if (GetPawn())
+		GetPawn()->AddMovementInput(direction, Value);
 }
 
