@@ -24,6 +24,7 @@ protected:
 
 	void Forward(float Value);
 	void Right(float Value);
+	void SpawnBomb();
 };
 
 

@@ -21,7 +21,10 @@ public:
 	FORCEINLINE class UCameraComponent* GetTopDownCameraComponent() const { return TopDownCameraComponent; }
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	
+	UPROPERTY(EditAnywhere)
+		float BombSpawnerDistance;
+	UFUNCTION()
+		void SpawnBomb();
 
 private:
 	/** Top down camera */
@@ -31,5 +34,13 @@ private:
 	/** Camera boom positioning the camera above the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
+
+	UPROPERTY(VisibleAnywhere)
+		int m_AmountOfBombs;
+	UPROPERTY(VisibleAnywhere)
+		int m_Blast;
+
+	UPROPERTY(VisibleAnywhere)
+		AActor* BombSpawnerRef;
 };
 
