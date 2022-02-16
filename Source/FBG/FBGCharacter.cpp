@@ -51,6 +51,7 @@ AFBGCharacter::AFBGCharacter()
 
 	BombSpawnerDistance = 100.f;
 	m_Blast = 2;
+	m_AmountOfBombs = 1;
 }
 
 void AFBGCharacter::Tick(float DeltaSeconds)
@@ -62,7 +63,7 @@ void AFBGCharacter::Tick(float DeltaSeconds)
 
 void AFBGCharacter::SpawnBomb()
 {
-	if (m_AmountOfBombs > 1)
+	if (m_AmountOfBombs > 0)
 	{
 		BombSpawnerRef = nullptr;
 		TArray<AActor*>SpawnersBomb;
