@@ -17,6 +17,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		bool bIsOccupied;
+	UPROPERTY(EditDefaultsOnly, Category = Bomb)
+		TSubclassOf<class AFBGBomb> BombClass;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

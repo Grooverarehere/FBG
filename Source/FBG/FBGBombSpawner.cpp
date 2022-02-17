@@ -2,6 +2,7 @@
 
 
 #include "FBGBombSpawner.h"
+#include "FBGBomb.h"
 
 // Sets default values
 AFBGBombSpawner::AFBGBombSpawner()
@@ -29,5 +30,10 @@ void AFBGBombSpawner::SpawnBomb(AActor* OwnerSpawner, float BlastLength)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Actor: %s"),*OwnerSpawner->GetFName().ToString());
 	UE_LOG(LogTemp, Warning, TEXT("BlastLength: %f"), BlastLength);
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = OwnerSpawner;
+	SpawnParams.Instigator = GetInstigator();
+	AFBGBomb * bomb=GetWorld()->SpawnActor<AFBGBomb>(BombClass, GetActorLocation(), GetActorRotation(), SpawnParams);
+	bomb->IgniteBomb(this, BlastLength, OwnerSpawner);
 }
 

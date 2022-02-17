@@ -2,6 +2,12 @@
 
 
 #include "FBGBomb.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "FBGCharacter.h"
+#include "Components/CapsuleComponent.h"
+#include "FBGBombBlast.h"
+#include "Kismet/GameplayStatics.h"
+
 
 // Sets default values
 AFBGBomb::AFBGBomb()
@@ -9,17 +15,66 @@ AFBGBomb::AFBGBomb()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRoot"));
+	RootComponent = SceneRoot;
+
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	Mesh->SetupAttachment(RootComponent);
+
+	Fuse_Particle = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Fuse_Particle"));
+	Fuse_Particle->SetupAttachment(Mesh);
+
+	BombCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BombCollision"));
+	BombCollision->SetupAttachment(RootComponent);
+
+	BombOverlapCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BombOverlapCollision"));
+	BombOverlapCollision->SetupAttachment(RootComponent);
+	BombOverlapCollision->OnComponentEndOverlap.AddDynamic(this, &AFBGBomb::OnOverlapEnd);
 }
 
-void AFBGBomb::IgniteBomb()
+void AFBGBomb::IgniteBomb(AFBGBombSpawner* Spawner, float BlastLenght, AActor* OwnerSpawner)
 {
+	//UGameplayStatics::SpawnSoundAtLocation
+
 }
 
 // Called when the game starts or when spawned
 void AFBGBomb::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	TArray<FHitResult>Hits;
+	FVector StartPoint(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z+50.f);
+	FVector EndPoint(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 50.f);
+	ETraceTypeQuery MyTraceType = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility);
+	TArray<AActor*> Ignore;
+	UKismetSystemLibrary::BoxTraceMulti(GetWorld(), StartPoint,EndPoint,FVector(45.f,45.f,45.f),FRotator(0.f,0.f,0.f),MyTraceType,false,Ignore,EDrawDebugTrace::None,Hits,true,FLinearColor::Blue,FLinearColor::Blue);
+	for (int i = 0; i < Hits.Num(); i++)
+	{
+		ActorToIgnore.AddUnique(Hits[i].GetActor());
+	}
+	SetCollisionsToActorsToIgnore();
+}
+
+void AFBGBomb::SetCollisionsToActorsToIgnore()
+{
+	for (int i = 0; i < ActorToIgnore.Num(); i++)
+	{
+		AFBGCharacter* character = Cast<AFBGCharacter>(ActorToIgnore[i]);
+		if (character->IsValidLowLevel())
+		{
+			character->GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
+		}
+	}
+	BombCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+}
+
+void AFBGBomb::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	AFBGCharacter* character = Cast<AFBGCharacter>(OtherActor);
+	if (character->IsValidLowLevel())
+	{
+		character->GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Block);
+	}
 }
 
 // Called every frame
