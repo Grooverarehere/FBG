@@ -8,10 +8,12 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Components/BoxComponent.h"
 #include "FBGBombSpawner.h"
+#include "IDamage.h"
+#include "Components/TimelineComponent.h"
 #include "FBGBomb.generated.h"
 
 UCLASS()
-class FBG_API AFBGBomb : public AActor
+class FBG_API AFBGBomb : public AActor, public IIDamage
 {
 	GENERATED_BODY()
 	
@@ -27,15 +29,30 @@ class FBG_API AFBGBomb : public AActor
 		class UBoxComponent* BombOverlapCollision;
 	UPROPERTY(EditDefaultsOnly, Category = Bomb)
 		TSubclassOf<class AFBGBombBlast> BombBlastClass;
+	UPROPERTY(EditAnywhere)
+		UCurveFloat* EmissiveCurve;
+	UPROPERTY(EditAnywhere)
+		UCurveFloat* BombSizeCurve;
 public:	
 	// Sets default values for this actor's properties
 	AFBGBomb();
 
+	void IgniteBomb(AFBGBombSpawner* Spawner, float BlastLength, AActor* Owner);
 
-
-	void IgniteBomb(AFBGBombSpawner* Spawner, float BlastLenght, AActor* Owner);
+	virtual void Damage() override;
 protected:
 	TArray<AActor*>ActorToIgnore;
+	TArray<AFBGBombBlast*>SpawnedBlast;
+	AFBGBombSpawner* ActorSpawner;
+	float m_BlastLength;
+	AActor* BombOwner;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		UTimelineComponent* ExplodeTimeLine;
+	FOnTimelineFloat UpdateEmissiveFloat;
+	FOnTimelineFloat UpdateBombsizeFloat;
+	FOnTimelineEventStatic FinishedFunctionFloat;
+	FTimerHandle ExplodeTimer;
+	bool bExplode;
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -44,6 +61,15 @@ protected:
 	 UFUNCTION()
 		void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	 void SpawnBlast();
+	 UFUNCTION()
+	 void EmisiveUpdate(float Output);
+	 UFUNCTION()
+	 void BombSizeUpdate(float Output);
+	 UFUNCTION()
+		 void FinishedTimelineFunction();
+	 UFUNCTION()
+		 void Explode();
 	
 public:	
 	// Called every frame

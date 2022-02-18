@@ -14,6 +14,7 @@ class AFBGPlayerController : public APlayerController
 public:
 	AFBGPlayerController();
 
+	void StopInput();
 protected:
 	
 

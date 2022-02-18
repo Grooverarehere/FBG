@@ -14,6 +14,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "FBGBombSpawner.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "FBGPlayerController.h"
 
 AFBGCharacter::AFBGCharacter()
 {
@@ -48,6 +49,8 @@ AFBGCharacter::AFBGCharacter()
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+
+	EmissiveTimeLine = CreateDefaultSubobject<UTimelineComponent>(TEXT("EmissiveTimeLine"));
 
 	BombSpawnerDistance = 100.f;
 	m_Blast = 2;
@@ -88,4 +91,59 @@ void AFBGCharacter::SpawnBomb()
 			}
 		}
 	}
+}
+
+void AFBGCharacter::Damage()
+{
+	if (!bDead)
+	{
+		bDead = true;
+		
+		
+		AFBGPlayerController* cont = Cast<AFBGPlayerController>(GetController());
+		cont->StopInput();
+		bDied = true;
+		GetWorldTimerManager().SetTimer(DiedTimer, this, &AFBGCharacter::Died, 1.2f, false);
+			//Signal Game Over
+			//Destroy();
+		
+		
+		//delay y game over
+	}
+}
+
+void AFBGCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	UpdateEmissiveFloat.BindDynamic(this, &AFBGCharacter::EmissiveUpdate);
+	FinishedFunctionFloat.BindUFunction(this, "FinishedTimelineFunction");
+	if (EmissiveTimeLine)
+	{
+		EmissiveTimeLine->AddInterpFloat(EmissiveCurve, UpdateEmissiveFloat);
+		EmissiveTimeLine->SetTimelineFinishedFunc(FinishedFunctionFloat);
+	}
+
+}
+
+void AFBGCharacter::EmissiveUpdate(float Output)
+{
+	GetMesh()->SetScalarParameterValueOnMaterials("Emissive", Output);
+}
+
+void AFBGCharacter::FinishedTimelineFunction()
+{
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), Ploof, GetActorLocation(), GetActorRotation());
+	GetMesh()->SetVisibility(false);
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = GetInstigator();
+	FVector loc=GetActorLocation();
+	loc.Z -= 88.f;
+	GetWorld()->SpawnActor<AActor>(Gravestone,loc, FRotator(0.f, 90.f, 0.f), SpawnParams);
+}
+
+void AFBGCharacter::Died()
+{
+	EmissiveTimeLine->PlayFromStart();
 }

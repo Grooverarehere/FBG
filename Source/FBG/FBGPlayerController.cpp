@@ -12,6 +12,11 @@ AFBGPlayerController::AFBGPlayerController()
 	
 }
 
+void AFBGPlayerController::StopInput()
+{
+	InputComponent = nullptr;
+}
+
 void AFBGPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);

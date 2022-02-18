@@ -26,6 +26,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Movement)
 		UProjectileMovementComponent* ProjectileMovementComponent;
 
+	void Initiate_BombBlast(float BlastLength);
 protected:
 	float m_BlastLength;
 	FVector InitPosition;
@@ -37,7 +38,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void Initiate_BombBlast(float BlastLength);
+	
 	void SetDamage();
 	void StopBlast();
 	void DestroyBlast();

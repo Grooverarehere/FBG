@@ -3,6 +3,7 @@
 
 #include "FBGBombBlast.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "IDamage.h"
 
 // Sets default values
 AFBGBombBlast::AFBGBombBlast()
@@ -40,6 +41,7 @@ void AFBGBombBlast::Initiate_BombBlast(float BlastLength)
 	Blast_Particle->SetFloatParameter("ParticleSpawnRate", 300);
 	m_BlastLength = BlastLength;
 	InitPosition = GetActorLocation();
+	SetDamage();
 	
 }
 
@@ -57,7 +59,11 @@ void AFBGBombBlast::SetDamage()
 			m_BlastLength = Hits[i].Distance;
 		}
 		bCanMove = true;
-		//Poner el daño a los elementos
+		IIDamage* DamageInterface = Cast<IIDamage>(Hits[i].GetActor());
+		if (DamageInterface)
+		{
+			DamageInterface->Damage();
+		}
 	}
 	bCanMove = true;
 	GetWorldTimerManager().SetTimer(BlastTimer, this, &AFBGBombBlast::SetDamage, 0.1f, true);
@@ -92,6 +98,7 @@ void AFBGBombBlast::Tick(float DeltaTime)
 				bStop = true;
 				GetWorldTimerManager().SetTimer(StopBlastTimer, this, &AFBGBombBlast::StopBlast, 0.1f, false);
 			}
+			ProjectileMovementComponent->Activate();
 		}
 	}
 }
