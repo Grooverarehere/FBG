@@ -7,6 +7,7 @@
 #include "IDamage.h"
 #include "Components/TimelineComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Sound/SoundBase.h"
 #include "FBGCharacter.generated.h"
 
 UCLASS(Blueprintable)
@@ -36,10 +37,20 @@ public:
 		UNiagaraSystem* Ploof;
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class AActor>Gravestone;
+	UPROPERTY(VisibleAnywhere)
+		int Blast;
+	UPROPERTY(EditAnywhere)
+		USoundBase* ItemSound;
+	UPROPERTY(VisibleAnywhere)
+		int Speed;
 	UFUNCTION()
 		void SpawnBomb();
 
 	virtual void Damage() override;
+
+	void PlayItemSound();
+
+	void ChangeSpeed();
 		 
 private:
 	/** Top down camera */

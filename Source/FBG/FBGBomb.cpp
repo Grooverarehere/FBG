@@ -10,6 +10,7 @@
 #include "Kismet/KismetMathLibrary.h"
 
 
+
 // Sets default values
 AFBGBomb::AFBGBomb()
 {
@@ -37,7 +38,7 @@ AFBGBomb::AFBGBomb()
 
 void AFBGBomb::IgniteBomb(AFBGBombSpawner* Spawner, float BlastLength, AActor* OwnerSpawner)
 {
-	//UGameplayStatics::SpawnSoundAtLocation
+	ActiveSound = UGameplayStatics::SpawnSoundAtLocation(GetWorld(), SparklerClass, GetActorLocation());
 	SpawnBlast();
 	ActorSpawner = Spawner;
 	m_BlastLength = BlastLength;
@@ -139,7 +140,8 @@ void AFBGBomb::Explode()
 {
 	if (!bExplode) {
 		bExplode = true;
-		//PlaySoundAtLocation
+		ActiveSound->Stop();
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionClass, GetActorLocation());
 		ActorSpawner->bIsOccupied = false;
 		BombOverlapCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility,ECollisionResponse::ECR_Ignore);
 		for (int i = 0; i < SpawnedBlast.Num(); i++)

@@ -28,8 +28,7 @@ void AFBGBombSpawner::Tick(float DeltaTime)
 
 void AFBGBombSpawner::SpawnBomb(AActor* OwnerSpawner, float BlastLength)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Actor: %s"),*OwnerSpawner->GetFName().ToString());
-	UE_LOG(LogTemp, Warning, TEXT("BlastLength: %f"), BlastLength);
+	
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = OwnerSpawner;
 	SpawnParams.Instigator = GetInstigator();

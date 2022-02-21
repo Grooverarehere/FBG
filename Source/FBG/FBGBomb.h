@@ -10,6 +10,8 @@
 #include "FBGBombSpawner.h"
 #include "IDamage.h"
 #include "Components/TimelineComponent.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundBase.h"
 #include "FBGBomb.generated.h"
 
 UCLASS()
@@ -33,6 +35,10 @@ class FBG_API AFBGBomb : public AActor, public IIDamage
 		UCurveFloat* EmissiveCurve;
 	UPROPERTY(EditAnywhere)
 		UCurveFloat* BombSizeCurve;
+	UPROPERTY(EditDefaultsOnly, Category = Bomb)
+		 USoundBase* SparklerClass;
+	UPROPERTY(EditDefaultsOnly, Category = Bomb)
+		USoundBase* ExplosionClass;
 public:	
 	// Sets default values for this actor's properties
 	AFBGBomb();
@@ -53,6 +59,8 @@ protected:
 	FOnTimelineEventStatic FinishedFunctionFloat;
 	FTimerHandle ExplodeTimer;
 	bool bExplode;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		UAudioComponent* ActiveSound;
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 

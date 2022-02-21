@@ -53,8 +53,9 @@ AFBGCharacter::AFBGCharacter()
 	EmissiveTimeLine = CreateDefaultSubobject<UTimelineComponent>(TEXT("EmissiveTimeLine"));
 
 	BombSpawnerDistance = 100.f;
-	m_Blast = 2;
+	Blast = 2;
 	m_AmountOfBombs = 1;
+	Speed = 3;
 }
 
 void AFBGCharacter::Tick(float DeltaSeconds)
@@ -69,6 +70,7 @@ void AFBGCharacter::SpawnBomb()
 	if (m_AmountOfBombs > 0)
 	{
 		BombSpawnerRef = nullptr;
+		BombSpawnerDistance = 100.f;
 		TArray<AActor*>SpawnersBomb;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AFBGBombSpawner::StaticClass(),SpawnersBomb);
 		for (int i = 0; i < SpawnersBomb.Num(); i++) {
@@ -86,7 +88,7 @@ void AFBGCharacter::SpawnBomb()
 				if (!BombSpawner->bIsOccupied)
 				{
 					m_AmountOfBombs--;
-					BombSpawner->SpawnBomb(this, UKismetMathLibrary::Conv_IntToFloat(m_Blast * 100));
+					BombSpawner->SpawnBomb(this, UKismetMathLibrary::Conv_IntToFloat(Blast * 100));
 				}
 			}
 		}
@@ -109,6 +111,33 @@ void AFBGCharacter::Damage()
 		
 		
 		//delay y game over
+	}
+}
+
+void AFBGCharacter::PlayItemSound()
+{
+	UGameplayStatics::PlaySound2D(GetWorld(),ItemSound);
+}
+
+void AFBGCharacter::ChangeSpeed()
+{
+	switch (Speed)
+	{
+	case 1:
+		GetCharacterMovement()->MaxWalkSpeed = 350.f;
+		break;
+	case 2:
+		GetCharacterMovement()->MaxWalkSpeed = 450.f;
+		break;
+	case 3:
+		GetCharacterMovement()->MaxWalkSpeed = 550.f;
+		break;
+	case 4:
+		GetCharacterMovement()->MaxWalkSpeed = 650.f;
+		break;
+	case 5:
+		GetCharacterMovement()->MaxWalkSpeed = 750.f;
+		break;
 	}
 }
 

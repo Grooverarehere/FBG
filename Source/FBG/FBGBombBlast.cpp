@@ -51,7 +51,7 @@ void AFBGBombBlast::SetDamage()
 	TArray<FHitResult>Hits;
 	TArray<AActor*> Ignore;
 	ETraceTypeQuery MyTraceType = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility);
-	bool m_collision=UKismetSystemLibrary::BoxTraceMulti(GetWorld(), InitPosition, EndPosition, FVector(40.f, 40.f, 40.f), FRotator(0.f, 0.f, 0.f), MyTraceType, false, Ignore, EDrawDebugTrace::None, Hits, true, FLinearColor::Blue, FLinearColor::Blue);
+	bool m_collision=UKismetSystemLibrary::BoxTraceMulti(GetWorld(), InitPosition, EndPosition, FVector(35.f, 35.f, 35.f), FRotator(0.f, 0.f, 0.f), MyTraceType, false, Ignore, EDrawDebugTrace::None, Hits, true, FLinearColor::Blue, FLinearColor::Blue);
 	for (int i = 0; i < Hits.Num(); i++)
 	{
 		if (m_collision)
