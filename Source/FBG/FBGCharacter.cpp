@@ -109,6 +109,7 @@ void AFBGCharacter::Damage()
 		if (cont) {
 			cont->StopInput();
 		}
+		GetMovementComponent()->StopMovementImmediately();
 		bDied = true;
 		GetWorldTimerManager().SetTimer(DiedTimer, this, &AFBGCharacter::Died, 1.2f, false);
 			//Signal Game Over
