@@ -65,18 +65,19 @@ void AFBGCharacter::Tick(float DeltaSeconds)
 	
 }
 
-void AFBGCharacter::SpawnBomb()
+bool AFBGCharacter::SpawnBomb()
 {
+	bool r = false;
 	if (m_AmountOfBombs > 0)
 	{
 		BombSpawnerRef = nullptr;
-		BombSpawnerDistance = 100.f;
+		float distance = BombSpawnerDistance;
 		TArray<AActor*>SpawnersBomb;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AFBGBombSpawner::StaticClass(),SpawnersBomb);
 		for (int i = 0; i < SpawnersBomb.Num(); i++) {
-			if (FVector::Distance(SpawnersBomb[i]->GetActorLocation(), GetActorLocation()) <= BombSpawnerDistance)
+			if (FVector::Distance(SpawnersBomb[i]->GetActorLocation(), GetActorLocation()) <= distance)
 			{
-				BombSpawnerDistance = FVector::Distance(SpawnersBomb[i]->GetActorLocation(), GetActorLocation());
+				distance = FVector::Distance(SpawnersBomb[i]->GetActorLocation(), GetActorLocation());
 				BombSpawnerRef = SpawnersBomb[i];
 			}
 		}
@@ -89,10 +90,12 @@ void AFBGCharacter::SpawnBomb()
 				{
 					m_AmountOfBombs--;
 					BombSpawner->SpawnBomb(this, UKismetMathLibrary::Conv_IntToFloat(Blast * 100));
+					r = true;
 				}
 			}
 		}
 	}
+	return r;
 }
 
 void AFBGCharacter::Damage()
@@ -103,7 +106,9 @@ void AFBGCharacter::Damage()
 		
 		
 		AFBGPlayerController* cont = Cast<AFBGPlayerController>(GetController());
-		cont->StopInput();
+		if (cont) {
+			cont->StopInput();
+		}
 		bDied = true;
 		GetWorldTimerManager().SetTimer(DiedTimer, this, &AFBGCharacter::Died, 1.2f, false);
 			//Signal Game Over
@@ -170,9 +175,13 @@ void AFBGCharacter::FinishedTimelineFunction()
 	FVector loc=GetActorLocation();
 	loc.Z -= 88.f;
 	GetWorld()->SpawnActor<AActor>(Gravestone,loc, FRotator(0.f, 90.f, 0.f), SpawnParams);
+	if(!Cast<AFBGPlayerController>(GetController()))
+	Destroy();
+
 }
 
 void AFBGCharacter::Died()
 {
 	EmissiveTimeLine->PlayFromStart();
+	
 }

@@ -27,7 +27,7 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	UPROPERTY(EditAnywhere)
 		float BombSpawnerDistance;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		int m_AmountOfBombs;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		bool bDied;
@@ -37,14 +37,14 @@ public:
 		UNiagaraSystem* Ploof;
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class AActor>Gravestone;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		int Blast;
 	UPROPERTY(EditAnywhere)
 		USoundBase* ItemSound;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		int Speed;
-	UFUNCTION()
-		void SpawnBomb();
+	UFUNCTION(BlueprintCallable)
+		bool SpawnBomb();
 
 	virtual void Damage() override;
 

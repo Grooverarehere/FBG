@@ -140,6 +140,7 @@ void AFBGBomb::Explode()
 {
 	if (!bExplode) {
 		bExplode = true;
+		if(ActiveSound)
 		ActiveSound->Stop();
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionClass, GetActorLocation());
 		ActorSpawner->bIsOccupied = false;
