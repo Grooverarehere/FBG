@@ -15,6 +15,7 @@
 #include "FBGBombSpawner.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "FBGPlayerController.h"
+#include "FBGGameMode.h"
 
 AFBGCharacter::AFBGCharacter()
 {
@@ -112,11 +113,6 @@ void AFBGCharacter::Damage()
 		GetMovementComponent()->StopMovementImmediately();
 		bDied = true;
 		GetWorldTimerManager().SetTimer(DiedTimer, this, &AFBGCharacter::Died, 1.2f, false);
-			//Signal Game Over
-			//Destroy();
-		
-		
-		//delay y game over
 	}
 }
 
@@ -176,8 +172,12 @@ void AFBGCharacter::FinishedTimelineFunction()
 	FVector loc=GetActorLocation();
 	loc.Z -= 88.f;
 	GetWorld()->SpawnActor<AActor>(Gravestone,loc, FRotator(0.f, 90.f, 0.f), SpawnParams);
-	if(!Cast<AFBGPlayerController>(GetController()))
-	Destroy();
+	if (!Cast<AFBGPlayerController>(GetController())) {
+		Destroy();
+	}
+	else {
+		GetWorldTimerManager().SetTimer(DiedTimer, this, &AFBGCharacter::EndGame, 1.2f, false);
+	}
 
 }
 
@@ -185,4 +185,13 @@ void AFBGCharacter::Died()
 {
 	EmissiveTimeLine->PlayFromStart();
 	
+}
+
+void AFBGCharacter::EndGame()
+{
+	AFBGGameMode* gm = Cast<AFBGGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (gm)
+	{
+		gm->EndGame();
+	}
 }

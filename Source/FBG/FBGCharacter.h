@@ -83,6 +83,8 @@ private:
 		void FinishedTimelineFunction();
 	UFUNCTION()
 		void Died();
+	UFUNCTION()
+		void EndGame();
 
 };
 
